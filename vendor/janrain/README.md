@@ -1,3 +1,0 @@
-function janrain_entity_find ${_JANRAIN_CLIENT_ID} ${_JANRAIN_CLIENT_SECRET} ${_JANRAIN_TYPE_NAME} ${_JANRAIN_FILTER}
-
-function janrain_entity_update ${_JANRAIN_CLIENT_ID} ${_JANRAIN_CLIENT_SECRET} ${_JANRAIN_TYPE_NAME} ${_JANRAIN_FILTER}
