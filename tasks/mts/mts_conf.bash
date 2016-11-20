@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+_MTS_SUBSCRIPTION_ENVIRONMENT=test
+_MTS_WORKSPACE="${HOME}/open_solutions"
+_MTS_WEB_WORKSPACE="${_MTS_WORKSPACE}/web"
+_MTS_ACQUIA_WORKSPACE="${_MTS_WORKSPACE}/acquia"
+_MTS_TEMP_PATCH_FOLDER="/tmp/mts-patches"
+_MTS_DOCKER_CONTAINER="os_cli"
