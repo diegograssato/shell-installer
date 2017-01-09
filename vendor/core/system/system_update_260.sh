@@ -10,8 +10,8 @@ function system_update_260() {
 
 function system_add_docker_compose_in_home_bash() {
 
-  [[ "${SHELL}" == "/bin/zsh" ]] && local _RC_FILE="$HOME/.zshrc"
-  [[ "${SHELL}" == "/bin/bash" ]] && local _RC_FILE="$HOME/.bashrc"
+  [[ "${SHELL}" == *"/bin/zsh" ]] && local _RC_FILE="$HOME/.zshrc"
+  [[ "${SHELL}" == *"/bin/bash" ]] && local _RC_FILE="$HOME/.bashrc"
 
   if ! grep -wq "COMPOSE_FILE" ${_RC_FILE} ; then
 

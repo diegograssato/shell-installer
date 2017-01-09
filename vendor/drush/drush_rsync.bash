@@ -2,11 +2,13 @@
 
 function drush_rsync() {
 
-  local _DRUSH_RSYNC_ORIGIN=${1:-}
+  local _DRUSH_RSYNC_SOURCE=${1:-}
   local _DRUSH_RSYNC_DESTINATION=${2:-}
   local _DRUSH_RSYNC_FORCE=${3:-}
+  local _DRUSH_RSYNC_FLAGS=${4:-}
+  local _DRUSH_RSYNC_VALID_SOURCE=false
 
-  if [ -z "${_DRUSH_RSYNC_ORIGIN}" ]; then
+  if [ -z "${_DRUSH_RSYNC_SOURCE}" ]; then
 
     raise RequiredParameterNotFound "[drush_rsync] Please provide a valid origin"
 
@@ -18,35 +20,67 @@ function drush_rsync() {
 
   fi
 
-  #TODO there should be a validation for _DRUSH_RSYNC_FORCE
-  out_info "Rsynching files between ${_DRUSH_RSYNC_ORIGIN} and ${_DRUSH_RSYNC_DESTINATION}" 1
-  ${_DRUSH} ${_DRUSH_RSYNC_FORCE} rsync ${_DRUSH_RSYNC_ORIGIN} ${_DRUSH_RSYNC_DESTINATION} --update --exclude="/js/js_*" --exclude="css/css_*" --exclude="node_modules" --exclude=".sass-cache" --mode="Cav" || true
+  out_info "Checking source [ ${_DRUSH_RSYNC_SOURCE} ]" 1
+
+  if [[ "${_DRUSH_RSYNC_SOURCE}" == "@"* ]]; then
+
+    local _DRUSH_RSYNC_SOURCE_COMPONENTS=$(echo ${_DRUSH_RSYNC_SOURCE} | sed -rn "s#@(\w+)\.(\w+):(.*)#\1 \2 \3#p")
+    local _DRUSH_RSYNC_REMOTE_SUBSCRIPTION=$(echo ${_DRUSH_RSYNC_SOURCE_COMPONENTS} | cut -d ' ' -f 1)
+    local _DRUSH_RSYNC_REMOTE_ENV=$(echo ${_DRUSH_RSYNC_SOURCE_COMPONENTS} | cut -d ' ' -f 2)
+    local _DRUSH_RSYNC_REMOTE_FILE=$(echo ${_DRUSH_RSYNC_SOURCE_COMPONENTS} | cut -d ' ' -f 3)
+
+    ${_DRUSH} @${_DRUSH_RSYNC_REMOTE_SUBSCRIPTION}.${_DRUSH_RSYNC_REMOTE_ENV} ssh "ls ${_DRUSH_RSYNC_REMOTE_FILE}" &> /dev/null && true
+
+    if [ $? -eq 0 ]; then
+
+      _DRUSH_RSYNC_VALID_SOURCE=true
+
+    fi
+
+  else
+
+    if [ -f ${_DRUSH_RSYNC_SOURCE} ] || [ -d ${_DRUSH_RSYNC_SOURCE} ]; then
+
+      _DRUSH_RSYNC_VALID_SOURCE=true
+
+    fi
+
+  fi
+
+  if (${_DRUSH_RSYNC_VALID_SOURCE}); then
+
+    out_info "RSynching files between ${_DRUSH_RSYNC_SOURCE} and ${_DRUSH_RSYNC_DESTINATION}" 1
+    ${_DRUSH} ${_DRUSH_RSYNC_FORCE} rsync ${_DRUSH_RSYNC_SOURCE} ${_DRUSH_RSYNC_DESTINATION} ${_DRUSH_RSYNC_FLAGS}
+
+  else
+
+    out_danger "The source file [ ${_DRUSH_RSYNC_SOURCE} ]  is not valid" 1
+
+  fi
+
 }
 
-#TODO why should this function exist?
-function drush_rsync_clean() {
+function drush_rsync_site() {
 
   local _DRUSH_RSYNC_ORIGIN=${1:-}
   local _DRUSH_RSYNC_DESTINATION=${2:-}
   local _DRUSH_RSYNC_FORCE=${3:-}
-  local _DRUSH_RSYNC_FLAGS=${4:-}
 
   if [ -z "${_DRUSH_RSYNC_ORIGIN}" ]; then
 
-    raise RequiredParameterNotFound "[drush_rsync_clean] Please provide a valid origin"
+    raise RequiredParameterNotFound "[drush_rsync_site] Please provide a valid origin"
 
   fi
 
   if [ -z "${_DRUSH_RSYNC_DESTINATION}" ]; then
 
-    raise RequiredParameterNotFound "[drush_rsync_clean] Please provide a valid destination"
+    raise RequiredParameterNotFound "[drush_rsync_site] Please provide a valid destination"
 
   fi
 
   #TODO there should be a validation for _DRUSH_RSYNC_FORCE
-
-  out_info "Clean rsynching files between ${_DRUSH_RSYNC_ORIGIN} and ${_DRUSH_RSYNC_DESTINATION}" 1
-  ${_DRUSH} ${_DRUSH_RSYNC_FORCE} rsync ${_DRUSH_RSYNC_ORIGIN} ${_DRUSH_RSYNC_DESTINATION} ${_DRUSH_RSYNC_FLAGS}
+  out_info "Rsynching files between ${_DRUSH_RSYNC_ORIGIN} and ${_DRUSH_RSYNC_DESTINATION}" 1
+  ${_DRUSH} ${_DRUSH_RSYNC_FORCE} rsync ${_DRUSH_RSYNC_ORIGIN} ${_DRUSH_RSYNC_DESTINATION} --update --exclude="/js/js_*" --exclude="css/css_*" --exclude="node_modules" --exclude=".sass-cache" --mode="Cav" || true
 
 }
 
@@ -148,7 +182,7 @@ function drush_rsync_logs() {
   for _WEB_SERVER in ${_DRUSH_RSYNC_ENV_WEB_SERVERS}; do
 
     filesystem_create_folder_777 "${_DRUSH_RSYNC_TEMP_PATH}/${_WEB_SERVER}"
-    drush_rsync_clean "${_DRUSH_RSYNC_REMOTE_LOG_PATH}/${_WEB_SERVER}/" "${_DRUSH_RSYNC_TEMP_PATH}/${_WEB_SERVER}/" "-y" "${_DRUSH_RSYNC_FLAGS}"
+    drush_rsync "${_DRUSH_RSYNC_REMOTE_LOG_PATH}/${_WEB_SERVER}/" "${_DRUSH_RSYNC_TEMP_PATH}/${_WEB_SERVER}/" "-y" "${_DRUSH_RSYNC_FLAGS}"
 
     for _LOG in ${_DRUSH_RSYNC_LOG_FILES}; do
 

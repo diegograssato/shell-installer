@@ -5,19 +5,19 @@ function slack_prepare() {
 
     if [ -z ${_SLACK_TOKEN:-} ]; then
 
-      raise RequiredConfigNotFound "Please configure variable _SLACK_TOKEN for integrating whith Slack"
+      raise MissingRequiredConfig "Please configure variable _SLACK_TOKEN for integrating whith Slack"
 
     fi
 
     if [ -z ${_SLACK_CHANNEL_DEFAULT:-} ]; then
 
-      raise RequiredConfigNotFound "Please configure variable _SLACK_CHANNEL_DEFAULT for integrating whith Slack"
+      raise MissingRequiredConfig "Please configure variable _SLACK_CHANNEL_DEFAULT for integrating whith Slack"
 
     fi
 
     if [ -z ${_SLACK_TEAM:-} ]; then
 
-      raise RequiredConfigNotFound "Please configure variable _SLACK_TEAM for integrating whith Slack"
+      raise MissingRequiredConfig "Please configure variable _SLACK_TEAM for integrating whith Slack"
 
     fi
     local _SLACK_MSG_COUNT="$(echo ${1:-} | wc -w)"

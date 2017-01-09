@@ -608,7 +608,7 @@ function git_generate_new_tag_name() {
   local _GIT_ACTIVE_RESOURCE="${2}"
   local _GIT_TAG_EXISTS=$(${_GIT} -C ${_GIT_REPO_PATH} tag -l | ${_GREP} "${_GIT_ACTIVE_RESOURCE}" | wc -l)
   local _INCREMENT="$(echo ${_GIT_TAG_EXISTS} | sed -e "s/${_GIT_ACTIVE_RESOURCE}//g" | sed -e "s/\.//g")"
-  local _GIT_ACTIVE_RESOURCE="${_GIT_ACTIVE_RESOURCE}.${_GIT_TAG_EXISTS}";
+  local _GIT_ACTIVE_RESOURCE=$(echo "${_GIT_ACTIVE_RESOURCE}.${_GIT_TAG_EXISTS}" | tr -d ' ' );
 
   echo ${_GIT_ACTIVE_RESOURCE};
 

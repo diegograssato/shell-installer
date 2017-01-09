@@ -10,13 +10,13 @@ function janrain_entity() {
 
   if [ -z ${_JANRAIN_CLIENT_ID:-} ] || [ -z ${_JANRAIN_CLIENT_SECRET:-} ]; then
 
-    raise RequiredConfigNotFound "[janrain_entity] Please configure variables _JANRAIN_CLIENT_ID and _JANRAIN_CLIENT_SECRET in configuration file [config/janrain_config.bash]"
+    raise MissingRequiredConfig "[janrain_entity] Please configure variables _JANRAIN_CLIENT_ID and _JANRAIN_CLIENT_SECRET in configuration file [config/janrain_config.bash]"
 
   fi
 
   if [ -z ${_JANRAIN_DOMAIN_URL:-} ]; then
 
-    raise RequiredConfigNotFound "[janrain_entity] Please configure variable _JANRAIN_DOMAIN_URL in configuration file [config/janrain_config.bash]"
+    raise MissingRequiredConfig "[janrain_entity] Please configure variable _JANRAIN_DOMAIN_URL in configuration file [config/janrain_config.bash]"
 
   fi
 

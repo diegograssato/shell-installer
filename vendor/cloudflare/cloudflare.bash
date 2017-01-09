@@ -5,26 +5,26 @@ function cloudflare_domain_info() {
 
   if [ -z ${_CLOUDFLARE_CLIENT_EMAIL:-} ]; then
 
-    raise RequiredConfigNotFound "[cloudflare_domain_info] Please configure variables _CLOUDFLARE_CLIENT_EMAIL in configuration file [config/cloudlare_config.bash]."
+    raise MissingRequiredConfig "[cloudflare_domain_info] Please configure variables _CLOUDFLARE_CLIENT_EMAIL in configuration file [config/cloudlare_config.bash]."
 
   fi
 
   if [ -z ${_CLOUDFLARE_TOKEN:-} ]; then
 
-    raise RequiredConfigNotFound "[cloudflare_domain_info] Please configure variables _CLOUDFLARE_TOKEN in configuration file [config/cloudlare_config.bash]."
+    raise MissingRequiredConfig "[cloudflare_domain_info] Please configure variables _CLOUDFLARE_TOKEN in configuration file [config/cloudlare_config.bash]."
 
   fi
 
   if [ -z ${_CLOUDFLARE_ENDPOINT:-} ]; then
 
-    raise RequiredConfigNotFound "[cloudflare_domain_info] Please configure variable _CLOUDFLARE_ENDPOINT in configuration file [config/cloudlare_config.bash]."
+    raise MissingRequiredConfig "[cloudflare_domain_info] Please configure variable _CLOUDFLARE_ENDPOINT in configuration file [config/cloudlare_config.bash]."
 
   fi
 
   local _CLOUDFLARE_DOMAIN=${1}
   if [ -z ${_CLOUDFLARE_DOMAIN:-} ]; then
 
-    raise RequiredConfigNotFound "[cloudflare_domain_info] Please provaid a valid domain."
+    raise MissingRequiredConfig "[cloudflare_domain_info] Please provaid a valid domain."
 
   else
 
@@ -63,7 +63,7 @@ function cloudflare_domain_info() {
   if [[ ${_CLOUDFLARE_DOMAIN_INFO:11:5} == "false" ]]; then
 
     echo ${_CLOUDFLARE_DOMAIN_INFO}
-    raise RequiredConfigNotFound "[cloudflare_domain_info] Invalid request headers or Invalid format."
+    raise MissingRequiredConfig "[cloudflare_domain_info] Invalid request headers or Invalid format."
 
   fi
 
@@ -76,7 +76,7 @@ function cloudflare_domain_hash() {
   local _CLOUDFLARE_DOMAIN=${1}
   if [ -z ${_CLOUDFLARE_DOMAIN:-} ]; then
 
-    raise RequiredConfigNotFound "[cloudflare_domain_hash] Please provaid a valid domain."
+    raise MissingRequiredConfig "[cloudflare_domain_hash] Please provaid a valid domain."
 
   fi
 
@@ -84,7 +84,7 @@ function cloudflare_domain_hash() {
  if [[ ${_CLOUDFLARE_DOMAIN_INFO:11:5} == "false" ]]; then
 
    echo ${_CLOUDFLARE_DOMAIN_INFO}
-   raise RequiredConfigNotFound "[cloudflare_domain_hash] Invalid request headers or Invalid format."
+   raise MissingRequiredConfig "[cloudflare_domain_hash] Invalid request headers or Invalid format."
 
  fi
 

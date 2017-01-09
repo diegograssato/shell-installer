@@ -7,7 +7,7 @@ function apache_prepare() {
 
     if [ -z ${_APACHE_SITES_AVAILABLE:-} ]; then
 
-      raise RequiredConfigNotFound "Please configure variable _APACHE_SITES_AVAILABLE for integrating whith Apache2"
+      raise MissingRequiredConfig "Please configure variable _APACHE_SITES_AVAILABLE for integrating whith Apache2"
 
     fi
 
@@ -117,11 +117,11 @@ function apache_generate_vhost_macro() {
 
     out_info "Creating virtual hosts file" 1
     touch "${_APACHE_MACRO_VHOST_FILE}"
-    out_check_status $? "File updated ${_APACHE_MACRO_VHOST_FILE}" "[apache_generate_vhost] Error while on creating file in ${_APACHE_MACRO_VHOST_FILE}"
+    out_check_status $? "File created ${_APACHE_MACRO_VHOST_FILE}" "[apache_generate_vhost_macro] Error while on creating file in ${_APACHE_MACRO_VHOST_FILE}"
 
   fi
 
-  out_info "Adding virtual hosts domains" 1
+  out_info "Configuring virtual hosts domains" 1
 
   for _HOSTNAME in ${_DOMAIN_LIST}; do
 
@@ -158,10 +158,11 @@ EOF
 
 }
 
-function apache_reload() {
+function apache_restart() {
 
-  out_info "Reloading Apache" 1
-  ${_SERVICE} apache2 reload
-  out_check_status $? "Apache reloaded successfully" "Error on reload Apache"
+  out_info "Restarting Apache2" 1
+  sleep 5;
+  ${_SERVICE} apache2 restart
+  out_check_status $? "Apache2 restarted successfully" "Error on reload Apache2"
 
 }
