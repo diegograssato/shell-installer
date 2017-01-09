@@ -67,15 +67,19 @@ function system_check_update() {
   if [ ! "${_SCRIPT_VERSION_NEW}" == "${_SF_SCRIPT_VERSION_OLD}" ]; then
 
     system_check_old_updates
+    system_check_dependencies
 
-    if (is_function? "system_update_${_SCRIPT_VERSION_NEW}"); then
+    local _VERSION;
+    for (( _VERSION="${_SF_SCRIPT_VERSION_OLD}"; _VERSION <= "${_SCRIPT_VERSION_NEW}"; _VERSION++ )); do
 
-      out_warning "Applying ${_SCRIPT_VERSION_NEW} update version" 1
-      "system_update_${_SCRIPT_VERSION_NEW}"
-      system_check_dependencies
+      if (is_function? "system_update_${_VERSION}"); then
 
-    fi
+        out_warning "Applying system_update_${_VERSION} version" 1
+        "system_update_${_VERSION}"
 
+      fi
+
+    done
   fi
 
 }
@@ -89,12 +93,12 @@ function system_check_dependencies_not_installed() {
 
       for _PROGRAM in ${_SF_SCRIPT_LINUX_DEPENDENCIES}; do
 
-          if [[ $(system_check_configurations ${_PROGRAM}) == 1 ]]; then
+        if [[ $(system_check_configurations ${_PROGRAM}) == 1 ]]; then
 
-            out_danger "Please install ${_PROGRAM}"
-            _SYSTEM_INSTALL_NOW="${_PROGRAM} ${_SYSTEM_INSTALL_NOW}"
+          out_danger "Please install ${_PROGRAM}"
+          _SYSTEM_INSTALL_NOW="${_PROGRAM} ${_SYSTEM_INSTALL_NOW}"
 
-          fi
+        fi
 
       done
 

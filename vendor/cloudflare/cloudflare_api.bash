@@ -5,32 +5,32 @@ function cloudflare_domain_purge() {
   local _CLOUDFLARE_DOMAIN=${1}
   if [ -z ${_CLOUDFLARE_DOMAIN:-} ]; then
 
-    raise RequiredConfigNotFound "[cloudflare_domain_purge] Please provaid a valid domain."
+    raise MissingRequiredConfig "[cloudflare_domain_purge] Please provaid a valid domain."
 
   fi
 
  local _CLOUDFLARE_DOMAIN_HASH=$(cloudflare_domain_hash ${_CLOUDFLARE_DOMAIN})
  if [[ ${_CLOUDFLARE_DOMAIN_HASH:11:5} == "false" ]]; then
 
-   raise RequiredConfigNotFound "[cloudflare_domain_purge] Invalid request headers or Invalid format."
+   raise MissingRequiredConfig "[cloudflare_domain_purge] Invalid request headers or Invalid format."
 
  fi
 
  if [ -z ${_CLOUDFLARE_ENDPOINT:-} ]; then
 
-   raise RequiredConfigNotFound "[cloudflare_domain_purge] Please configure variable _CLOUDFLARE_ENDPOINT in configuration file [config/cloudlare_config.bash]."
+   raise MissingRequiredConfig "[cloudflare_domain_purge] Please configure variable _CLOUDFLARE_ENDPOINT in configuration file [config/cloudlare_config.bash]."
 
  fi
 
  if [ -z ${_CLOUDFLARE_CLIENT_EMAIL:-} ]; then
 
-   raise RequiredConfigNotFound "[cloudflare_domain_purge] Please configure variables _CLOUDFLARE_CLIENT_EMAIL in configuration file [config/cloudlare_config.bash]."
+   raise MissingRequiredConfig "[cloudflare_domain_purge] Please configure variables _CLOUDFLARE_CLIENT_EMAIL in configuration file [config/cloudlare_config.bash]."
 
  fi
 
  if [ -z ${_CLOUDFLARE_TOKEN:-} ]; then
 
-   raise RequiredConfigNotFound "[cloudflare_domain_purge] Please configure variables _CLOUDFLARE_TOKEN in configuration file [config/cloudlare_config.bash]."
+   raise MissingRequiredConfig "[cloudflare_domain_purge] Please configure variables _CLOUDFLARE_TOKEN in configuration file [config/cloudlare_config.bash]."
 
  fi
 

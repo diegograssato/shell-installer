@@ -140,13 +140,23 @@ function docker_exec() {
 
   fi
 
-  shift 1
+  if [ -z ${2:-} ] || [ ${2:-} == "false" ]; then
+
+    local _DOCKER_INTERACTIVE="-t"
+
+  elif [ ${2:-} == "true" ]; then
+
+    local _DOCKER_INTERACTIVE="-it"
+
+  fi
+
+  shift 2
   local _SHELL='bash -c '
   local _DOCKER_ARGUMENTS="${@}"
   readonly _DOCKER_ARGUMENTS=$(escape_arg "$_DOCKER_ARGUMENTS")
 
-  echo ${_DOCKER} exec -u docker -t ${_DOCKER_CONTAINER} ${_SHELL}  "$_DOCKER_ARGUMENTS"
-  ${_DOCKER} exec -u docker -t ${_DOCKER_CONTAINER} ${_SHELL}  "$_DOCKER_ARGUMENTS"
+  echo ${_DOCKER} exec -u docker ${_DOCKER_INTERACTIVE} ${_DOCKER_CONTAINER} ${_SHELL}  "$_DOCKER_ARGUMENTS"
+  ${_DOCKER} exec -u docker ${_DOCKER_INTERACTIVE} ${_DOCKER_CONTAINER} ${_SHELL}  "$_DOCKER_ARGUMENTS"
 
 }
 

@@ -283,11 +283,11 @@ function install_software() {
 
   # set to 0 if not found
   local _softwares_not_installed=""
-  for i in ${@}; do
+  for s in "${@}"; do
 
-    if [ $(program_is_installed ${i}) == 1 ]; then
+    if [ $(program_is_installed ${s}) == 1 ]; then
 
-      _softwares_not_installed="${i} ${_softwares_not_installed}"
+      _softwares_not_installed="${s} ${_softwares_not_installed}"
 
     fi
 
@@ -314,11 +314,11 @@ function remove_software() {
 
   # set to 0 if not found
   local _softwares_are_removed=""
-  for i in ${@}; do
+  for r in ${@}; do
 
-    if [ $(program_is_installed ${i}) == 0 ]; then
+    if [ $(program_is_installed ${r}) == 0 ]; then
 
-      _softwares_are_removed="${i} ${_softwares_are_removed}"
+      _softwares_are_removed="${r} ${_softwares_are_removed}"
 
     fi
 

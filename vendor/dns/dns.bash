@@ -3,19 +3,19 @@ function dns_prepare() {
 
     if [ -z ${_DNS_SERVER_KEY:-} ]; then
 
-      raise RequiredConfigNotFound "Please configure variable _DNS_SERVER_KEY for integrating whith DNS Server"
+      raise MissingRequiredConfig "Please configure variable _DNS_SERVER_KEY for integrating whith DNS Server"
 
     fi
 
     if [ -z ${_DNS_SERVER_IP:-} ]; then
 
-      raise RequiredConfigNotFound "Please configure variable _DNS_SERVER_IP for integrating whith DNS Server"
+      raise MissingRequiredConfig "Please configure variable _DNS_SERVER_IP for integrating whith DNS Server"
 
     fi
 
     if [ -z ${_DNS_TTL:-} ]; then
 
-      raise RequiredConfigNotFound "Please configure variable _DNS_TTL for integrating whith DNS Server"
+      raise MissingRequiredConfig "Please configure variable _DNS_TTL for integrating whith DNS Server"
 
     fi
 

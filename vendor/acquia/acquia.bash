@@ -2,10 +2,6 @@
 
 import git drush
 
-: '
-  @param String  _DATABASE_SRC_DB_CONNECTION formatted string for mysql connection
-  @return String _DATABASE_TEMP_DB_FILE path to temporary file with db dump or empty
-'
 function acquia_subsite_mysqldump_no_cache() {
 
   local _SUBSCRIPTION=${1:-}
@@ -487,7 +483,7 @@ function acquia_task_monitor() {
 
   if [[ "${_STATE}" = "error" ]]; then
 
-    echo -e "\t${BYELLOW} State:${COLOR_OFF} ${BBRED}${_STATE}${COLOR_OFF}\n";
+    echo -e "\t${BYELLOW} State:${COLOR_OFF} ${BRED}${_STATE}${COLOR_OFF}\n";
     return 1;
 
   fi
@@ -495,5 +491,63 @@ function acquia_task_monitor() {
   echo -e "\t${BYELLOW} State:${COLOR_OFF} ${BGREEN}${_STATE}${COLOR_OFF}\n"
 
   return 0;
+
+}
+
+function acquia_install_global_module() {
+
+  local _ACQUIA_SUBSCRIPTION=${1:-}
+  local _ACQUIA_ENV=${2:-}
+  local _ACQUIA_MODULE=${3:-}
+  local _ACQUIA_MODULE_VERSION=${4:-}
+  local _ACQUIA_MODULE_TEST_COMMAND=${5:-}
+
+  out_info "Checking status of module [ ${_ACQUIA_MODULE} ]" 1
+
+  ${_DRUSH} @${_ACQUIA_SUBSCRIPTION}.${_ACQUIA_ENV} ssh "export _ACQUIA_MODULE=${_ACQUIA_MODULE} \
+    && export _ACQUIA_MODULE_VERSION=${_ACQUIA_MODULE_VERSION} \
+    && export _ACQUIA_MODULE_TEST_COMMAND=${_ACQUIA_MODULE_TEST_COMMAND} \
+    && bash -s" << "EOSSH"
+    drush cc drush
+    drush help ${_ACQUIA_MODULE_TEST_COMMAND} > /dev/null && true
+
+    if [ $? -ge 1 ]; then
+
+      echo -e "\e[31;1m[ ✘ ] Site Audit module not found. Downloading it.\e[m"
+      drush dl ${_ACQUIA_MODULE}-${_ACQUIA_MODULE_VERSION}
+
+    else
+
+      echo -e "\e[32;1m[ ✔ ] Module [ ${_ACQUIA_MODULE} ] module is already downloaded\e[m"
+
+    fi
+
+EOSSH
+
+}
+
+function acquia_delete_remote_folder() {
+
+  local _ACQUIA_SUBSCRIPTION=${1:-}
+  local _ACQUIA_ENV=${2:-}
+  local _ACQUIA_REMOTE_FOLDER=${3:-}
+
+  ${_DRUSH} @${_ACQUIA_SUBSCRIPTION}.${_ACQUIA_ENV} ssh "export _ACQUIA_REMOTE_FOLDER=${_ACQUIA_REMOTE_FOLDER} \
+    && bash -s" << "EOSSH"
+
+    _ACQUIA_REMOTE_FOLDER_PARENT=$(dirname ${_ACQUIA_REMOTE_FOLDER})
+
+    if [ -d ${_ACQUIA_REMOTE_FOLDER_PARENT} ]; then
+
+      rm -rf ${_ACQUIA_REMOTE_FOLDER_PARENT}
+      echo -e "\n\e[32;1m[ ✔ ] Cleared Site Audit folder in [ ${_ACQUIA_REMOTE_FOLDER_PARENT} ]\e[m"
+
+    else
+
+      echo -e "\n\e[31;1m[ ✘ ] [ ${_ACQUIA_REMOTE_FOLDER_PARENT} ] is not a valid folder\e[m"
+
+    fi
+
+EOSSH
 
 }
