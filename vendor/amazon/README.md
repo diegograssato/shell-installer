@@ -1,0 +1,1 @@
+function acquia_delete_remote_folder ${_AMAZON_S3_FILEPATH_SOURCE} ${_AMAZON_S3_FILEPATH_DESTINATION} ${_AMAZON_S3_CONTENT_TYPE}

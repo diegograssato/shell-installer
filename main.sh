@@ -40,8 +40,9 @@ if [ ${#} -ge 1 ]; then
   source "${SF_SCRIPTS_HOME}/bootstrap.bash"
   readonly _SF_SCRIPTS_CONFIG="${SF_SCRIPTS_HOME}/config"
   readonly _TASK_NAME=${1}
+  export _TASK_PARENT_NAME=""
   bootstrap_core
-  bootstrap_load_tasks ${1}
+  bootstrap_load_tasks
   bootstrap_load_modules
   bootstrap_update
   bootstrap_run "$@"

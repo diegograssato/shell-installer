@@ -24,8 +24,8 @@ else
 
 fi
 
-[[ "${SHELL}" == "/bin/zsh" ]] && _RC_FILE="$HOME/.zshrc"
-[[ "${SHELL}" == "/bin/bash" ]] && _RC_FILE="$HOME/.bashrc"
+[[ "${SHELL}" == *"/bin/zsh" ]] && _RC_FILE="$HOME/.zshrc"
+[[ "${SHELL}" == *"/bin/bash" ]] && _RC_FILE="$HOME/.bashrc"
 
 grep -Fxwq "#SF_INIT_SCRIPT" ${_RC_FILE}
 

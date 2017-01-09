@@ -16,38 +16,46 @@ function bootstrap_autoload() {
 
 function bootstrap_init() {
 
+  filesystem_delete_folder ${_SF_STATIC_CACHE_BASE_FOLDER}
   bootstrap_invoke_all "init"
 
 }
 
 function bootstrap_exit() {
 
-  ${_RMF} ${_SF_STATIC_CACHE_BASE_FOLDER}
+  filesystem_delete_folder ${_SF_STATIC_CACHE_BASE_FOLDER}
   bootstrap_invoke_all "exit"
 
-  _DURATION=$SECONDS
+  local _DURATION=$SECONDS
   out_success "Execution time: $((${_DURATION} / 60))m $((${_DURATION} % 60))s" 1
 
 }
 
 function bootstrap_core() {
 
-  _LOAD_FILES=$(find "${SF_SCRIPTS_HOME}/vendor/core" -type f -iname "*.sh" -o -iname "*.bash");
+  local _LOAD_FILES=$(find "${SF_SCRIPTS_HOME}/vendor/core" -type f -iname "*.sh" -o -iname "*.bash");
   bootstrap_autoload ${_LOAD_FILES}
 
 }
 
 function bootstrap_load_tasks() {
 
-  _LOAD_FILES=$(find "${SF_SCRIPTS_HOME}/tasks" -type f -iname "$1.sh");
-  if [ -z "${_LOAD_FILES}" ]; then
+  local _LOAD_FILES=$(find "${SF_SCRIPTS_HOME}/tasks" -type f -iname "${_TASK_NAME}.sh");
+  if [[ -z "${_LOAD_FILES}" ]]; then
 
-    raise FolderNotKnown "[bootstrap_load_tasks] Folder '${1}' is unknown"
+    raise FolderNotKnown "[bootstrap_load_tasks] Folder '${_TASK_NAME}' is unknown"
 
   fi
 
-  # Load also any bash files if available inside the task folder
-  _LOAD_FILES=(${_LOAD_FILES[@]} $(find "${SF_SCRIPTS_HOME}/tasks/$1" -type f -iname "*.bash"));
+  local _LOAD_TASK_PARENT_DIR="$(dirname  ${_LOAD_FILES})"
+  local _LOAD_TASK_DIR="${SF_SCRIPTS_HOME}/tasks/${_TASK_PARENT_NAME}"
+  export _TASK_PARENT_NAME="$(basename ${_LOAD_TASK_PARENT_DIR})"
+  if [ -d ${_LOAD_TASK_DIR} ]; then
+
+    # Load also any bash files if available inside the task folder
+    _LOAD_FILES="${_LOAD_FILES} $(find "${_LOAD_TASK_DIR}" -type f -iname "*.bash")"
+
+  fi
 
   bootstrap_autoload ${_LOAD_FILES[@]}
 
@@ -55,15 +63,15 @@ function bootstrap_load_tasks() {
 
 function bootstrap_load_modules() {
 
-  _VENDOR_FOLDER="${SF_SCRIPTS_HOME}/vendor"
-  _FOLDER_MODULES_LOCAL="${SF_SCRIPTS_HOME}/modules"
+  local _VENDOR_FOLDER="${SF_SCRIPTS_HOME}/vendor"
+  local _FOLDER_MODULES_LOCAL="${SF_SCRIPTS_HOME}/modules"
 
   while [[ ! -z "${_MODULE_DEPENDENCIES:-}" && -n "${_MODULE_DEPENDENCIES[@]}" && "${#_MODULE_DEPENDENCIES[@]}" -ge 1 && -n "${#_LOADED_MODULE_DEPENDENCIES[@]}" ]]; do
 
-    _FOLDERS=("")
+    local _FOLDERS=("")
     for _FOLDER in ${_MODULE_DEPENDENCIES[@]}; do
 
-      _ERRORS_FOUND=false
+      local _ERRORS_FOUND=false
 
       if [ -d "${_VENDOR_FOLDER}/${_FOLDER}" ]; then
 
@@ -91,8 +99,8 @@ function bootstrap_load_modules() {
 
     done
 
-    _LOAD_FILES=$(find ${_FOLDERS[@]} -not \( -path "${SF_SCRIPTS_HOME}/vendor/core" -prune \) -type f -iname "*.bash");
-    _LOADED_MODULE_DEPENDENCIES_BATCH=(${_MODULE_DEPENDENCIES[@]})
+    local _LOAD_FILES=$(find ${_FOLDERS[@]} -not \( -path "${SF_SCRIPTS_HOME}/vendor/core" -prune \) -type f -iname "*.bash");
+    local _LOADED_MODULE_DEPENDENCIES_BATCH=(${_MODULE_DEPENDENCIES[@]})
 
     bootstrap_autoload ${_LOAD_FILES}
     if [ ! -z ${_LOADED_MODULE_DEPENDENCIES_BATCH:-} ]; then
@@ -112,7 +120,7 @@ function bootstrap_load_modules() {
   done
 
   # Load config variables from running task
-  local _TASK_CONFIG_PATH="${SF_SCRIPTS_HOME}/config/${_TASK_NAME}_config.bash"
+  local _TASK_CONFIG_PATH="${SF_SCRIPTS_HOME}/config/${_TASK_PARENT_NAME}_config.bash"
   bootstrap_autoload ${_TASK_CONFIG_PATH}
 
 }
@@ -158,9 +166,9 @@ function bootstrap_run() {
   bootstrap_init
 
   #Check missing require configurations
-  if is_function? "${_TASK_NAME}_configurations"; then
+  if is_function? "${_TASK_PARENT_NAME}_configurations"; then
 
-    "${_TASK_NAME}_configurations"
+    "${_TASK_PARENT_NAME}_configurations"
 
   fi
 

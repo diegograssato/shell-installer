@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+_AMAZON_S3_BUCKET="foo"
+_AMAZON_S3_KEY="foo"
+_AMAZON_S3_SECRET="foo"
+_AMAZON_S3_PROTOCOL="https"
+_AMAZON_S3_URL="s3.amazonaws.com"
