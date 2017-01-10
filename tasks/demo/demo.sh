@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
 
-# 1. Run without any sudo
-# 2. Make sure the script can setup a brand new site/subs without manual work
-# 3. Manual confs done in server:
-# - chmod u+s /var/log
-# - chmod 775 /var/www/html
-# - added ubuntu to root group
-# - chmod u+s /etc/apache2/sites-available
-#====================================================================================================#
+import hello_world
 
 function demo_run() {
 
@@ -19,9 +12,9 @@ function demo_run() {
 
 function demo_usage() {
 
-  if [ ${#} != 1 ]; then
+  if [ ${#} -lt 1 ] || [ ${#} -gt 2 ]; then
 
-    out_usage "${_SCRIPT_ALIAS} demo <param>" 1
+    out_usage "${_SCRIPT_ALIAS} demo <param> (<success:true>)" 1
     return 1
 
   else
